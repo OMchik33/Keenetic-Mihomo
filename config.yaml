@@ -154,9 +154,9 @@ rule-providers:
   telegram-ips:
     type: http
     behavior: ipcidr
-    format: mrs
-    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/telegram.mrs
-    path: ./rule-sets/telegram-ips.mrs
+    format: yaml
+    url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/telegram-ips.yaml
+    path: ./rule-sets/telegram-ips.yaml
     interval: 86400
   whatsapp-domain:
     type: http
