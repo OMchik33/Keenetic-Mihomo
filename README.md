@@ -6,11 +6,10 @@
 
 ## ⚙️ Поддержка ядра
 
-На данный момент поддержка Mihomo добавлена в **форк клиента xkeen**.  
-Скоро она появится (или уже появилась) в официальной установке:
+На данный момент поддержка Mihomo добавлена в **форк клиента XKeen:**
 
-- [XKeen на GitHub](https://github.com/jameszeroX/XKeen)
-- Рабочая бета версия xkeen с Mihomo от автора: [Инструкция в Telegram](https://t.me/c/2138190368/258/132588)
+- [Форк XKeen на GitHub](https://github.com/jameszeroX/XKeen)
+- Рабочая  версия XKeen с Mihomo от автора: [Инструкция в Telegram](https://t.me/c/2138190368/258/132588)
 
 ---
 
