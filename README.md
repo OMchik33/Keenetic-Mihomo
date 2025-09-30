@@ -9,7 +9,7 @@
 На данный момент поддержка Mihomo добавлена в **форк клиента XKeen:**
 
 - [Форк XKeen на GitHub](https://github.com/jameszeroX/XKeen)
-- Рабочая  версия XKeen с Mihomo от автора: [Инструкция в Telegram](https://t.me/c/2138190368/258/132588)
+- Новости от автора сборки: [В Telegram](https://t.me/c/2138190368/258/132588)
 
 ---
 
