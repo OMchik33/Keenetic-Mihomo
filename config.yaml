@@ -126,6 +126,13 @@ proxy-groups:
   
 # --- ПОДПИСКИ НА ПРАВИЛА МАРШРУТИЗАЦИИ ---
 rule-providers:
+  tiktok-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/tiktok.mrs
+    path: ./rule-sets/tiktok-domain.mrs
+    interval: 86400
   twitch-domain:
     type: http
     behavior: domain
@@ -154,6 +161,13 @@ rule-providers:
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/whatsapp.mrs
     path: ./rule-sets/whatsapp-domain.mrs
     interval: 86400
+  whatsapp-ips:
+    type: http
+    behavior: ipcidr
+    format: yaml
+    url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/whatsapp-ips.yaml
+    path: ./rule-sets/whatsapp-ips.yaml
+    interval: 86400
   steam-domain:
     type: http
     behavior: domain
@@ -167,7 +181,7 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/gaming-ips.yaml
     path: ./rule-sets/steam-ips.yaml
-    interval: 86400    
+    interval: 86400
   newfix:
     type: http
     behavior: domain
@@ -255,12 +269,15 @@ rule-providers:
 
 # --- ПРАВИЛА МАРШРУТИЗАЦИИ ---
 rules:
+  # - PROCESS-NAME,AnyDesk.exe,VPN
+  # - PROCESS-NAME,Discord.exe,VPN
   # - DOMAIN-SUFFIX,google.com,VPN # пример правила для домена google.com и всех поддоменов
   # - IP-CIDR,176.222.191.0/24,VPN,no-resolve # пример правила для IP подсети
+  - RULE-SET,tiktok-domain,TikTok
   - RULE-SET,newfix,VPN
   - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),Telegram
+  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WhatsApp
   - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),Steam
-  - OR,((RULE-SET,whatsapp-domain)),WhatsApp
   - RULE-SET,youtube,YouTube
   - RULE-SET,twitch-domain,Twitch
   - OR,((DOMAIN,ipwho.is),(DOMAIN,api.ip.sb),(DOMAIN,ipapi.co),(DOMAIN,ipinfo.io)),VPN
@@ -272,5 +289,5 @@ rules:
   - RULE-SET,refilter_ipsum,VPN
   - OR,((RULE-SET,cloudflare-domains),(RULE-SET,cloudflare-ips)),Cloudflare
   - MATCH,DIRECT # это самая нижная строка правил, ниже ее ничего не должно быть
-  # ссылка на русскоязычную документацию по правилам маршрутизации: 
+  # ссылка на русскоязычную документацию по правилам маршрутизации:
   # https://wiki.metacubex.one/ru/config/
