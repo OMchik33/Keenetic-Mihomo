@@ -82,6 +82,7 @@ proxy-groups:
     icon: https://github.com/OMchik33/Whatsapp-icon/blob/master/icons/whatsapp_194x194.png?raw=true
     remnawave: # Кастомное поле используемое только в Remnawave (отключает добавление всех прокси в данную секцию, кроме указанных вручную)
       include-proxies: false
+    include-all: true
     proxies:
       - VPN
       - DIRECT
@@ -112,8 +113,8 @@ proxy-groups:
       include-proxies: false
     include-all: true
     proxies:
-      - DIRECT
       - VPN
+      - DIRECT
 
   - name: Twitch
     type: select
@@ -123,7 +124,16 @@ proxy-groups:
     proxies:
       - DIRECT
       - VPN
-  
+
+  - name: TikTok
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png
+    remnawave: # Кастомное поле используемое только в Remnawave (отключает добавление всех прокси в данную секцию, кроме указанных вручную)
+      include-proxies: false
+    proxies:
+      - VPN
+      - DIRECT
+
 # --- ПОДПИСКИ НА ПРАВИЛА МАРШРУТИЗАЦИИ ---
 rule-providers:
   tiktok-domain:
