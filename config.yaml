@@ -306,7 +306,7 @@ rules:
   # - PROCESS-NAME,Discord.exe,VPN
   # --- Блок первичного DNS-разрешения ---
   - GEOSITE,private,DIRECT
-  - GEOSITE,ru,DIRECT
+  - GEOIP,RU,DIRECT
   - GEOIP,private,DIRECT
   # --- Соцсети / сервисы — лёгкие ---
   - RULE-SET,youtube,YouTube
