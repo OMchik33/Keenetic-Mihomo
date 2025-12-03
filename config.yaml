@@ -266,13 +266,6 @@ rule-providers:
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/youtube.mrs
     path: ./rule-sets/youtube.mrs
     interval: 86400
-  oisd_big:
-    type: http
-    behavior: domain
-    format: mrs
-    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/oisd/big.mrs
-    path: ./oisd/big.mrs
-    interval: 86400
   torrent-trackers:
     type: http
     behavior: domain
@@ -312,7 +305,6 @@ rules:
   - RULE-SET,youtube,YouTube
   - RULE-SET,twitch-domain,Twitch
   - OR,((DOMAIN,ipwho.is),(DOMAIN,api.ip.sb),(DOMAIN,ipapi.co),(DOMAIN,ipinfo.io)),VPN
-  - RULE-SET,oisd_big,REJECT
   - OR,((RULE-SET,torrent-clients),(RULE-SET,torrent-trackers)),DIRECT
   - OR,((RULE-SET,discord_domains),(RULE-SET,discord_voiceips)),VPN
   - RULE-SET,ru-bundle,VPN
