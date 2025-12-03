@@ -22,23 +22,43 @@ sniffer:
 
 dns:
   enable: true
-  prefer-h3: true
-  use-hosts: true
-  use-system-hosts: true
   listen: 127.0.0.1:6868
+
   ipv6: false
   enhanced-mode: redir-host
-  default-nameserver:
-    - tls://77.88.8.8 # Yandex DNS over TLS
-    - 195.208.4.1 # НСДИ
-  proxy-server-nameserver:
-    - tls://77.88.8.8 # Yandex DNS over TLS
-    - 195.208.4.1 # НСДИ
-  direct-nameserver:
-    - tls://77.88.8.8 # Yandex DNS over TLS
-    - 195.208.4.1 # НСДИ
+
+  prefer-h3: false # ускоряет DoH/DoT
+  use-system-hosts: true
+  use-hosts: true
+
+  # Основной быстрый приватный DNS
   nameserver:
-    - https://cloudflare-dns.com/dns-query
+    - tls://1.1.1.1 # Cloudflare DoT
+    - tls://1.0.0.1
+
+  # Для всех запросов, которые идут через прокси
+  proxy-server-nameserver:
+    - tls://1.1.1.1
+
+  # Для прямых запросов, когда правило указывает DIRECT
+  direct-nameserver:
+    - tls://1.1.1.1
+
+  # Внутренняя проверка, если домен не может быть найден мгновенно
+  default-nameserver:
+    - tls://1.1.1.1
+
+  # Резервный DNS
+  fallback:
+    - tls://77.88.8.8 # Yandex DoT
+
+  fallback-filter:
+    geoip: false
+    geoip-code: RU
+    domain:
+      - "+.ru" # всё ru-домены → fallback быстрее
+
+proxies: # LEAVE THIS LINE!
 
 # --- ВАШИ ПРОКСИ-СЕРВЕРЫ ---
 proxy-providers:
@@ -279,25 +299,34 @@ rule-providers:
 
 # --- ПРАВИЛА МАРШРУТИЗАЦИИ ---
 rules:
+  # --- Маршрутизация по имени процесса ---
+  # - PROCESS-NAME,ast_service.exe,DIRECT
+  # - PROCESS-NAME,assistant.exe,DIRECT
   # - PROCESS-NAME,AnyDesk.exe,VPN
   # - PROCESS-NAME,Discord.exe,VPN
-  # - DOMAIN-SUFFIX,google.com,VPN # пример правила для домена google.com и всех поддоменов
-  # - IP-CIDR,176.222.191.0/24,VPN,no-resolve # пример правила для IP подсети
-  - RULE-SET,tiktok-domain,TikTok
-  - RULE-SET,newfix,VPN
-  - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),Telegram
-  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WhatsApp
-  - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),Steam
+  # --- Блок первичного DNS-разрешения ---
+  - GEOSITE,private,DIRECT
+  - GEOSITE,ru,DIRECT
+  - GEOIP,private,DIRECT
+  # --- Соцсети / сервисы — лёгкие ---
   - RULE-SET,youtube,YouTube
-  - RULE-SET,twitch-domain,Twitch
+  - RULE-SET,discord_domains,VPN
+  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WhatsApp
+  # --- Игры / Steam ---
+  - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),Steam
+  # --- IP API / определения локации ---
   - OR,((DOMAIN,ipwho.is),(DOMAIN,api.ip.sb),(DOMAIN,ipapi.co),(DOMAIN,ipinfo.io)),VPN
-  - RULE-SET,oisd_big,REJECT
-  - OR,((RULE-SET,torrent-clients),(RULE-SET,torrent-trackers)),DIRECT
-  - OR,((RULE-SET,discord_domains),(RULE-SET,discord_voiceips)),VPN
+  # --- Cloudflare ---
+  - OR,((RULE-SET,cloudflare-domains),(RULE-SET,cloudflare-ips)),Cloudflare
+  # --- Русские блок-листы / Фильтрация ---
   - RULE-SET,ru-bundle,VPN
   - RULE-SET,refilter_domains,VPN
   - RULE-SET,refilter_ipsum,VPN
-  - OR,((RULE-SET,cloudflare-domains),(RULE-SET,cloudflare-ips)),Cloudflare
+  # --- Блокировщики (самые тяжёлые) ---
+  - RULE-SET,oisd_big,REJECT
+  # --- Торренты и P2P ---
+  - OR,((RULE-SET,torrent-clients),(RULE-SET,torrent-trackers)),DIRECT
+  # --- Финальная политика ---
   - MATCH,DIRECT # это самая нижная строка правил, ниже ее ничего не должно быть
   # ссылка на русскоязычную документацию по правилам маршрутизации:
   # https://wiki.metacubex.one/ru/config/
