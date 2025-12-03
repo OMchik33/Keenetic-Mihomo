@@ -58,8 +58,6 @@ dns:
     domain:
       - "+.ru" # всё ru-домены → fallback быстрее
 
-proxies: # LEAVE THIS LINE!
-
 # --- ВАШИ ПРОКСИ-СЕРВЕРЫ ---
 proxy-providers:
   sub:
