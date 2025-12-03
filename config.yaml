@@ -319,7 +319,7 @@ rules:
   - RULE-SET,ru-bundle,VPN
   - RULE-SET,refilter_domains,VPN
   - RULE-SET,refilter_ipsum,VPN
-  # --- Блокировщики (самые тяжёлые) ---
+  # --- Блокировка рекламы (самые тяжёлые правила) ---
   - RULE-SET,oisd_big,REJECT
   # --- Торренты и P2P ---
   - OR,((RULE-SET,torrent-clients),(RULE-SET,torrent-trackers)),DIRECT
