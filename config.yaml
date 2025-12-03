@@ -295,33 +295,30 @@ rule-providers:
     path: ./ru-bundle/rule.mrs
     interval: 86400
 
-# --- ПРАВИЛА МАРШРУТИЗАЦИИ ---
+  # --- ПРАВИЛА МАРШРУТИЗАЦИИ ---
 rules:
   # --- Маршрутизация по имени процесса ---
   # - PROCESS-NAME,ast_service.exe,DIRECT
   # - PROCESS-NAME,assistant.exe,DIRECT
   # - PROCESS-NAME,AnyDesk.exe,VPN
   # - PROCESS-NAME,Discord.exe,VPN
-  #
-  # --- Соцсети / сервисы — лёгкие ---
-  - RULE-SET,youtube,YouTube
-  - RULE-SET,discord_domains,VPN
+  # - DOMAIN-SUFFIX,google.com,VPN # пример правила для домена google.com и всех поддоменов
+  # - IP-CIDR,176.222.191.0/24,VPN,no-resolve # пример правила для IP подсети
+  - RULE-SET,tiktok-domain,TikTok
+  - RULE-SET,newfix,VPN
+  - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),Telegram
   - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WhatsApp
-  # --- Игры / Steam ---
   - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),Steam
-  # --- IP API / определения локации ---
+  - RULE-SET,youtube,YouTube
+  - RULE-SET,twitch-domain,Twitch
   - OR,((DOMAIN,ipwho.is),(DOMAIN,api.ip.sb),(DOMAIN,ipapi.co),(DOMAIN,ipinfo.io)),VPN
-  # --- Cloudflare ---
-  - OR,((RULE-SET,cloudflare-domains),(RULE-SET,cloudflare-ips)),Cloudflare
-  # --- Русские блок-листы / Фильтрация ---
+  - RULE-SET,oisd_big,REJECT
+  - OR,((RULE-SET,torrent-clients),(RULE-SET,torrent-trackers)),DIRECT
+  - OR,((RULE-SET,discord_domains),(RULE-SET,discord_voiceips)),VPN
   - RULE-SET,ru-bundle,VPN
   - RULE-SET,refilter_domains,VPN
   - RULE-SET,refilter_ipsum,VPN
-  # --- Блокировка рекламы (самые тяжёлые правила) ---
-  - RULE-SET,oisd_big,REJECT
-  # --- Торренты и P2P ---
-  - OR,((RULE-SET,torrent-clients),(RULE-SET,torrent-trackers)),DIRECT
-  # --- Финальная политика ---
+  - OR,((RULE-SET,cloudflare-domains),(RULE-SET,cloudflare-ips)),Cloudflare
   - MATCH,DIRECT # это самая нижная строка правил, ниже ее ничего не должно быть
   # ссылка на русскоязычную документацию по правилам маршрутизации:
   # https://wiki.metacubex.one/ru/config/
