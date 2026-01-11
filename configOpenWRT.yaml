@@ -302,8 +302,8 @@ rule-providers:
 rules:
   # - DOMAIN-SUFFIX,google.com,VPN # пример правила для домена google.com и всех поддоменов
   # - IP-CIDR,176.222.191.0/24,VPN,no-resolve # пример правила для IP подсети
-  - RULE-SET,tiktok-domain,TikTok
   - RULE-SET,newfix,VPN
+  - RULE-SET,tiktok-domain,TikTok
   - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),Telegram
   - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WhatsApp
   - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),Steam
