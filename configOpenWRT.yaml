@@ -14,7 +14,7 @@ external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/downloa
 # DNS server settings
 # This section is optional. When not present, the DNS server will be disabled.
 dns:
-  enable: true
+  enable: false
   listen: 0.0.0.0:7874
   ipv6: false
   enhanced-mode: redir-host
