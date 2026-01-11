@@ -1,0 +1,321 @@
+# не забудьте переименовать этот файл в config.yaml
+tproxy-port: 7894
+socks-port: 7890 # SOCKS5 proxy port (если нужен прямой доступ к SOCKS5 прокси)
+allow-lan: false
+mode: rule
+log-level: silent
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+external-controller: '0.0.0.0:9090' # адрес веб админки: http://192.168.1.1:9090/ui
+external-ui: ui
+external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
+
+# DNS server settings
+# This section is optional. When not present, the DNS server will be disabled.
+dns:
+  enable: true
+  listen: 0.0.0.0:7874
+  ipv6: false
+  enhanced-mode: redir-host
+  prefer-h3: false # ускоряет DoH/DoT
+  use-system-hosts: true
+  use-hosts: true
+  # Основной быстрый приватный DNS
+  nameserver:
+    - tls://1.1.1.1 # Cloudflare DoT
+    - tls://1.0.0.1
+  # Для всех запросов, которые идут через прокси
+  proxy-server-nameserver:
+    - tls://1.1.1.1
+  # Для прямых запросов, когда правило указывает DIRECT
+  direct-nameserver:
+    - tls://1.1.1.1
+  # Внутренняя проверка, если домен не может быть найден мгновенно
+  default-nameserver:
+    - tls://1.1.1.1
+  # Резервный DNS
+  fallback:
+    - tls://77.88.8.8 # Yandex DoT
+  fallback-filter:
+    geoip: false
+    geoip-code: RU
+    domain:
+      - "+.ru" # всё ru-домены → fallback быстрее
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# Provides a default traffic mark for outbound connections on Linux
+routing-mark: 2 # Prevent cyclic redirection
+
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+    TLS:
+    QUIC:
+  skip-domain:
+    - 'Mijia Cloud'
+    - '+.lan'
+    - '+.local'
+    - '+.push.apple.com'
+    - '+.apple.com'
+  # To avoid sniffing a specific device on your network
+  # skip-src-address:
+  #   - 192.168.1.100/32
+  # skip-dst-address:
+  #   - 192.168.1.100/32
+
+# --- ВАШИ ПРОКСИ-СЕРВЕРЫ ---
+proxy-providers:
+  sub:
+    type: http
+    url: https://ссылкаподписки # Замените на свою ссылку подписки на прокси (ВПН)
+    path: ./proxy_providers/base64.yaml
+    interval: 3600
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+      timeout: 5000
+      lazy: true
+      expected-status: 204
+    override:
+      tfo: true
+      mptcp: true
+      udp: true
+
+# --- ГРУППЫ ПРОКСИ (ПОЛИТИКИ) ---
+proxy-groups:
+  - name: VPN
+    type: select
+    remnawave: # Кастомное поле используемое только в Remnawave (отключает добавление всех прокси в данную секцию, кроме указанных вручную)
+      include-proxies: false
+    include-all: true
+
+  - name: Telegram
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
+    remnawave: # Кастомное поле используемое только в Remnawave (отключает добавление всех прокси в данную секцию, кроме указанных вручную)
+      include-proxies: false
+    include-all: true
+    proxies:
+      - VPN
+      - DIRECT
+
+  - name: WhatsApp
+    type: select
+    icon: https://github.com/OMchik33/Whatsapp-icon/blob/master/icons/whatsapp_194x194.png?raw=true
+    remnawave: # Кастомное поле используемое только в Remnawave (отключает добавление всех прокси в данную секцию, кроме указанных вручную)
+      include-proxies: false
+    include-all: true
+    proxies:
+      - VPN
+      - DIRECT
+
+  - name: Cloudflare
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png
+    remnawave:
+      include-proxies: false
+    proxies:
+      - DIRECT
+      - VPN
+
+  - name: Steam
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png
+    remnawave: # Кастомное поле используемое только в Remnawave (отключает добавление всех прокси в данную секцию, кроме указанных вручную)
+      include-proxies: false
+    include-all: true
+    proxies:
+      - DIRECT
+      - VPN
+
+  - name: YouTube
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
+    remnawave: # Кастомное поле используемое только в Remnawave (отключает добавление всех прокси в данную секцию, кроме указанных вручную)
+      include-proxies: false
+    include-all: true
+    proxies:
+      - VPN
+      - DIRECT
+
+  - name: Twitch
+    type: select
+    icon: https://img.icons8.com/3d-fluency/94/twitch.png
+    remnawave: # Кастомное поле используемое только в Remnawave (отключает добавление всех прокси в данную секцию, кроме указанных вручную)
+      include-proxies: false
+    proxies:
+      - DIRECT
+      - VPN
+
+  - name: TikTok
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png
+    remnawave: # Кастомное поле используемое только в Remnawave (отключает добавление всех прокси в данную секцию, кроме указанных вручную)
+      include-proxies: false
+    proxies:
+      - VPN
+      - DIRECT
+
+# --- ПОДПИСКИ НА ПРАВИЛА МАРШРУТИЗАЦИИ ---
+rule-providers:
+  tiktok-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/tiktok.mrs
+    path: ./rule-sets/tiktok-domain.mrs
+    interval: 86400
+  twitch-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/twitch.mrs
+    path: ./rule-sets/twitch-domain.mrs
+    interval: 86400
+  telegram-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/telegram.mrs
+    path: ./rule-sets/telegram-domain.mrs
+    interval: 86400
+  telegram-ips:
+    type: http
+    behavior: ipcidr
+    format: yaml
+    url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/telegram-ips.yaml
+    path: ./rule-sets/telegram-ips.yaml
+    interval: 86400
+  whatsapp-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/whatsapp.mrs
+    path: ./rule-sets/whatsapp-domain.mrs
+    interval: 86400
+  whatsapp-ips:
+    type: http
+    behavior: ipcidr
+    format: yaml
+    url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/whatsapp-ips.yaml
+    path: ./rule-sets/whatsapp-ips.yaml
+    interval: 86400
+  steam-domain:
+    type: http
+    behavior: domain
+    format: yaml
+    url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/gaming-domains.yaml
+    path: ./rule-sets/steam-domain.yaml
+    interval: 86400
+  steam-ips:
+    type: http
+    behavior: ipcidr
+    format: yaml
+    url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/gaming-ips.yaml
+    path: ./rule-sets/steam-ips.yaml
+    interval: 86400
+  newfix:
+    type: http
+    behavior: domain
+    format: yaml
+    url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/newfix.yaml
+    path: ./rule-sets/newfix.yaml
+    interval: 86400
+  cloudflare-domains:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/cloudflare.mrs
+    path: ./rule-sets/cloudflare-domains.mrs
+    interval: 86400
+  cloudflare-ips:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/cloudflare.mrs
+    path: ./rule-sets/cloudflare-ips.mrs
+    interval: 86400
+  discord_domains:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/discord.mrs
+    path: ./rule-sets/discord_domains.mrs
+    interval: 86400
+  discord_voiceips:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/other/discord-voice-ip-list.mrs
+    path: ./rule-sets/discord_voiceips.mrs
+    interval: 86400
+  refilter_domains:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/re-filter/domain-rule.mrs
+    path: ./re-filter/domain-rule.mrs
+    interval: 86400
+  refilter_ipsum:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/re-filter/ip-rule.mrs
+    path: ./re-filter/ip-rule.mrs
+    interval: 86400
+  youtube:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/youtube.mrs
+    path: ./rule-sets/youtube.mrs
+    interval: 86400
+  torrent-trackers:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/other/torrent-trackers.mrs
+    path: ./rule-sets/torrent-trackers.mrs
+    interval: 86400
+  torrent-clients:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/other/torrent-clients.yaml
+    path: ./rule-sets/torrent-clients.yaml
+    interval: 86400
+  ru-bundle:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/ru-bundle/rule.mrs
+    path: ./ru-bundle/rule.mrs
+    interval: 86400
+
+  # --- ПРАВИЛА МАРШРУТИЗАЦИИ ---
+rules:
+  # - DOMAIN-SUFFIX,google.com,VPN # пример правила для домена google.com и всех поддоменов
+  # - IP-CIDR,176.222.191.0/24,VPN,no-resolve # пример правила для IP подсети
+  - RULE-SET,tiktok-domain,TikTok
+  - RULE-SET,newfix,VPN
+  - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),Telegram
+  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WhatsApp
+  - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),Steam
+  - RULE-SET,youtube,YouTube
+  - RULE-SET,twitch-domain,Twitch
+  - OR,((DOMAIN,ipwho.is),(DOMAIN,api.ip.sb),(DOMAIN,ipapi.co),(DOMAIN,ipinfo.io)),VPN
+  - OR,((RULE-SET,torrent-clients),(RULE-SET,torrent-trackers)),DIRECT
+  - OR,((RULE-SET,discord_domains),(RULE-SET,discord_voiceips)),VPN
+  - RULE-SET,ru-bundle,VPN
+  - RULE-SET,refilter_domains,VPN
+  - RULE-SET,refilter_ipsum,VPN
+  - OR,((RULE-SET,cloudflare-domains),(RULE-SET,cloudflare-ips)),Cloudflare
+  - MATCH,DIRECT # это самая нижная строка правил, ниже ее ничего не должно быть
+  # ссылка на русскоязычную документацию по правилам маршрутизации:
+  # https://wiki.metacubex.one/ru/config/
