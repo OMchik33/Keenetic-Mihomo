@@ -123,6 +123,7 @@ proxy-groups:
     proxies:
       - DIRECT
       - VPN
+      - REJECT
 
   - name: YouTube
     type: select
