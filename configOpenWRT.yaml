@@ -1,6 +1,4 @@
-# не забудьте переименовать этот файл в config.yaml
 tproxy-port: 7894
-socks-port: 7890 # SOCKS5 proxy port (если нужен прямой доступ к SOCKS5 прокси)
 allow-lan: false
 mode: rule
 log-level: silent
@@ -13,6 +11,7 @@ external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/downloa
 
 # DNS server settings
 # This section is optional. When not present, the DNS server will be disabled.
+# ДНС выключил так как в OpenWRT своя хорошая настройка ДНС есть в роутере
 dns:
   enable: false
   listen: 0.0.0.0:7874
