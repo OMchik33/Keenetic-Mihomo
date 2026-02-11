@@ -1,81 +1,111 @@
-tproxy-port: 4000
-socks-port: 7890 # SOCKS5 proxy port (если нужен прямой доступ к SOCKS5 прокси)
+# --- ОСНОВНЫЕ ПОРТЫ ---
+port: 7890             # HTTP/HTTPS порт для ПК/клиентов
+socks-port: 7891       # SOCKS5 порт
+mixed-port: 1080       # Объединённый порт для редиректов
+redir-port: 1182       # TProxy для LAN устройств
+tproxy-port: 1181      # TProxy
 allow-lan: true
 mode: rule
 log-level: silent
-ipv6: false
-external-controller: '0.0.0.0:9090' # адрес веб админки: http://192.168.1.1:9090/ui
-external-ui: ui
-external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
+ipv6: false            # Можно включить true если сеть поддерживает
+tcp-concurrent: true
+unified-delay: true
+geo-auto-update: true
+geo-update-interval: 168
+external-controller: 0.0.0.0:9090
+external-ui: ./zash
+external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/download/dist-cdn-fonts.zip"
+geodata-mode: true
 
+# --- ПРОФИЛЬ ---
 profile:
   store-selected: true
+find-process-mode: "off"
 
+
+# --- НАСТРОЙКИ СНИФФЕРА ---
 sniffer:
   enable: true
-  parse-pure-ip: true
   force-dns-mapping: true
   sniff:
     HTTP:
+      ports: [80]
+      override-destination: true
     TLS:
+      ports: [443]
     QUIC:
-
+      ports: [443]
+      
+# --- НАСТРОЙКИ DNS ---
 dns:
   enable: true
-  listen: 127.0.0.1:6868
-
+  listen: 0.0.0.0:7874
   ipv6: false
-  enhanced-mode: redir-host
+  cache-algorithm: arc
 
-  prefer-h3: false # ускоряет DoH/DoT
-  use-system-hosts: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+
   use-hosts: true
+  respect-rules: true
 
-  # Основной быстрый приватный DNS
-  nameserver:
-    - tls://1.1.1.1 # Cloudflare DoT
-    - tls://1.0.0.1
 
-  # Для всех запросов, которые идут через прокси
+  # Используем ЧИСТЫЕ IP
   proxy-server-nameserver:
-    - tls://1.1.1.1
+    - 1.1.1.1
+    - 8.8.8.8
 
-  # Для прямых запросов, когда правило указывает DIRECT
-  direct-nameserver:
-    - tls://1.1.1.1
-
-  # Внутренняя проверка, если домен не может быть найден мгновенно
+  # Bootstrap DNS (ВСЕГДА IP)
   default-nameserver:
-    - tls://1.1.1.1
+    - 1.1.1.1
+    - 8.8.8.8
 
-  # Резервный DNS
-  fallback:
-    - tls://77.88.8.8 # Yandex DoT
+  # Основные DNS — ТОЛЬКО DoH
+  nameserver:
+    - https://cloudflare-dns.com/dns-query
+    - https://doh.opendns.com/dns-query
+    - https://dns.google/dns-query
 
-  fallback-filter:
-    geoip: false
-    geoip-code: RU
-    domain:
-      - "+.ru" # всё ru-домены → fallback быстрее
+  # Точечные политики
+  nameserver-policy:
+    '+.supercell.net': https://dns.google/dns-query
+    '+.brawlstarsgame.com': https://dns.google/dns-query
 
-# --- ВАШИ ПРОКСИ-СЕРВЕРЫ ---
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - '*.lan'
+    - '*.local'
+    - 'localhost'
+
+    # Системные проверки
+    - +.msftconnecttest.com
+    - +.msftncsi.com
+    - +.connectivitycheck.gstatic.com
+    - +.detectportal.firefox.com
+
+    # NTP
+    - +.pool.ntp.org
+    - +.ntp.org
+    - +.time.windows.com
+
+    # Мобильные сети
+    - +.3gppnetwork.org
+
+# --- ПРОВАЙДЕРЫ ПРОКСИ ---
 proxy-providers:
-  sub:
+  subscription:
     type: http
-    url: https://ссылкаподписки # Замените на свою ссылку подписки на прокси (ВПН)
-    path: ./proxy_providers/base64.yaml
+    url: "https://ссылка_на_подписку_впн"
+    path: ./proxy-providers/subscription.yaml
     interval: 3600
     health-check:
       enable: true
-      url: http://www.gstatic.com/generate_204
-      interval: 300
-      timeout: 5000
-      lazy: true
-      expected-status: 204
-    override:
-      tfo: true
-      mptcp: true
-      udp: true
+      url: http://www.msftncsi.com/ncsi.txt
+      interval: 3000
+
+
+# Прокси загружаются автоматически из подписки
+proxies: []
 
 # --- ГРУППЫ ПРОКСИ (ПОЛИТИКИ) ---
 proxy-groups:
