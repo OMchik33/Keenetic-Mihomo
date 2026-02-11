@@ -81,6 +81,9 @@ proxy-providers:
       mptcp: true
       udp: true
 
+# Прокси загружаются автоматически из подписки
+proxies: []
+
 # --- ГРУППЫ ПРОКСИ (ПОЛИТИКИ) ---
 proxy-groups:
   - name: VPN
