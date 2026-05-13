@@ -1,0 +1,121 @@
+# ============================================================
+# Базовый Mihomo-конфиг
+#
+# Логика маршрутизации:
+# - Указанные домены и доменные зоны идут в DIRECT
+# - YouTube выбирается через отдельный селектор:
+#     • через прокси
+#     • напрямую
+# - Всё остальное идёт через прокси
+# - Прокси берутся из VPN-подписки
+# ============================================================
+
+# === ОСНОВНЫЕ НАСТРОЙКИ MIHOMO ===
+mixed-port: 7890
+allow-lan: true
+bind-address: "*"
+mode: rule
+log-level: warning
+ipv6: false
+tcp-concurrent: true
+unified-delay: true
+
+# === ВНЕШНЯЯ ПАНЕЛЬ УПРАВЛЕНИЯ ===
+external-controller: 0.0.0.0:9090
+secret: ""
+
+# === ZASHBOARD UI ===
+external-ui: ui
+external-ui-url: "https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip"
+
+# === СОХРАНЕНИЕ ВЫБОРА В СЕЛЕКТОРАХ ===
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# ============================================================
+# ПРОВАЙДЕР ПРОКСИ
+# ВСТАВЬТЕ ССЫЛКУ ПОДПИСКИ В ПОЛЕ url
+# ============================================================
+
+proxy-providers:
+  subscription:
+    type: http
+    url: "https://ссылка_на_подписку_впн"
+    path: ./proxy-providers/subscription.yaml
+    interval: 3600
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+
+# ============================================================
+# ПРОКСИ-ГРУППЫ
+# ============================================================
+
+proxy-groups:
+  # Основной селектор прокси из подписки
+  - name: "🌍 Прокси"
+    type: select
+    use:
+      - subscription
+
+  # YouTube можно отправить либо через прокси, либо напрямую
+  - name: "▶️ YouTube"
+    type: select
+    proxies:
+      - "🌍 Прокси"
+      - DIRECT
+
+# ============================================================
+# ПРАВИЛА МАРШРУТИЗАЦИИ
+# ============================================================
+
+rules:
+  # ==========================================================
+  # ДОМЕННЫЕ ЗОНЫ, КОТОРЫЕ ИДУТ НАПРЯМУЮ
+  # .ru
+  # .su
+  # .РФ
+  # ==========================================================
+  - 'DOMAIN-REGEX,(?i).*\.ru$,DIRECT'
+  - 'DOMAIN-REGEX,(?i).*\.su$,DIRECT'
+  - 'DOMAIN-REGEX,(?i).*\.xn--p1ai$,DIRECT'
+
+  # ==========================================================
+  # ДОМЕНЫ, КОТОРЫЕ ИДУТ НАПРЯМУЮ
+  # ==========================================================
+  - DOMAIN-SUFFIX,gosuslugi.com,DIRECT
+  - DOMAIN-SUFFIX,ozonusercontent.com,DIRECT
+  - DOMAIN-SUFFIX,yandex.net,DIRECT
+  - DOMAIN-SUFFIX,yastatic.net,DIRECT
+  - DOMAIN-SUFFIX,yandexcloud.net,DIRECT
+  - DOMAIN-SUFFIX,go.yandex,DIRECT
+  - DOMAIN-SUFFIX,kinopoisk.cloud,DIRECT
+  - DOMAIN-SUFFIX,kinopoisk.dev,DIRECT
+  - DOMAIN-SUFFIX,vk.com,DIRECT
+  - DOMAIN-SUFFIX,vkuser.net,DIRECT
+  - DOMAIN-SUFFIX,userapi.com,DIRECT
+  - DOMAIN-SUFFIX,vk-cdn.net,DIRECT
+  - DOMAIN-SUFFIX,avito.st,DIRECT
+  - DOMAIN-SUFFIX,mycdn.me,DIRECT
+  - DOMAIN-SUFFIX,rutube.com,DIRECT
+  - DOMAIN-SUFFIX,okko.tv,DIRECT
+  - DOMAIN-SUFFIX,premier.one,DIRECT
+  - DOMAIN-SUFFIX,2gis.com,DIRECT
+  - DOMAIN-SUFFIX,subwaysurfers.com,DIRECT
+
+  # ==========================================================
+  # YOUTUBE — ЧЕРЕЗ ОТДЕЛЬНЫЙ СЕЛЕКТОР
+  # ==========================================================
+  - DOMAIN-SUFFIX,youtube.com,▶️ YouTube
+  - DOMAIN-SUFFIX,youtu.be,▶️ YouTube
+  - DOMAIN-SUFFIX,googlevideo.com,▶️ YouTube
+  - DOMAIN-SUFFIX,ytimg.com,▶️ YouTube
+  - DOMAIN-SUFFIX,youtubei.googleapis.com,▶️ YouTube
+  - DOMAIN-SUFFIX,ggpht.com,▶️ YouTube
+
+  # ==========================================================
+  # ВСЁ ОСТАЛЬНОЕ — В ПРОКСИ
+  # ==========================================================
+  - MATCH,🌍 Прокси
